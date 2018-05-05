@@ -1,6 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
+import * as charactersJsons from 'assets/data/characters.json';
 
 @Injectable()
 export class DataService implements OnInit{
@@ -11,8 +12,10 @@ export class DataService implements OnInit{
   public readonly selectedCharacter
 
   constructor() { 
-    this.chars = new BehaviorSubject<any>(require('assets/data/characters.json'))
+    console.log('chars', charactersJsons)
+    this.chars = new BehaviorSubject<any>(charactersJsons)
     this.characters = this.chars.asObservable()
+    console.log('chars', this.chars)
     this.selectedChar = new BehaviorSubject<any>(this.chars.getValue()[0])
     this.selectedCharacter = this.selectedChar.asObservable()
     
@@ -24,7 +27,7 @@ export class DataService implements OnInit{
   }
 
   selectCharacter(character){
-    let char = this.chars.getValue().find(char => {return char.name = character})
+    let char = this.chars.find(char => {return char.name = character})
     this.selectedChar.next(char)
   }
 
