@@ -7,7 +7,7 @@
             "building": "Map Maker Manor"
         },
         "knows": [
-            "Breymin.residence.town"
+            "Breymin.residence.building"
         ]
     },
     {
@@ -16,6 +16,8 @@
             "town": "Kanbara",
             "building": "Map Maker Manor"
         },
-        "knows": []
+        "knows": [
+            "Breymin.residence.town"
+        ]
     }
 ]

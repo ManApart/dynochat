@@ -25,7 +25,7 @@ export class DataService implements OnInit{
   }
 
   selectCharacter(character){
-    let char = this.chars.find(char => {return char.name = character})
+    let char = this.chars.getValue().find(char => {return char.name == character})
     this.selectedChar.next(char)
   }
 
