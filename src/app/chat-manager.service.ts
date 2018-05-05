@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import * as characters from 'assets/data/characters.json';
-import * as topics from 'assets/data/topics.json';
-import * as synonyms from 'assets/data/synonyms.json';
+import * as charactersJson from 'assets/data/characters.json';
+import * as topicsJson from 'assets/data/topics.json';
+import * as synonymsJson from 'assets/data/synonyms.json';
 
 @Injectable()
 export class ChatManagerService {
@@ -10,9 +10,9 @@ export class ChatManagerService {
   synonyms
 
   constructor() {
-    this.characters = characters
-    this.topics = topics
-    this.synonyms = synonyms
+    this.characters = charactersJson
+    this.topics = topicsJson
+    this.synonyms = synonymsJson
   }
 
 
@@ -28,10 +28,10 @@ export class ChatManagerService {
 
     let found = undefined
     words.forEach(word => {
-      found = this.characters.find(char => { return char.name.toLowerCase().indexOf(word) > -1 })
+      if (!found){
+        found = this.characters.find(char => { return char.name.toLowerCase().indexOf(word) > -1 })
+      }
     })
-
-    console.log('looked for:', words.join(', '), '. Found', found)
 
     if (found) {
       return this.findAddress(found, words)
@@ -51,7 +51,7 @@ export class ChatManagerService {
     console.log(Object.keys(topic))
     words.forEach(word => {
       
-      if (Object.keys(topic).indexOf(word)){
+      if (Object.keys(topic).indexOf(word) > -1){
         console.log('found property for word', word)
       }
     });
