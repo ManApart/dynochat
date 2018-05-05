@@ -1,0 +1,12 @@
+[
+    {
+        "property": "residence.town",
+        "synonyms": ["location", "city"],
+        "response": "$character lives in $value"
+    },
+    {
+        "property": "residence.building",
+        "synonyms": ["home"],
+        "response": "$character lives at $value"
+    }
+]

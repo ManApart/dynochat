@@ -1,18 +1,18 @@
 import { Injectable } from '@angular/core';
 import * as charactersJson from 'assets/data/characters.json';
 import * as topicsJson from 'assets/data/topics.json';
-import * as synonymsJson from 'assets/data/synonyms.json';
+import * as dialogueJson from 'assets/data/dialogue.json';
 
 @Injectable()
 export class ChatManagerService {
   characters
   topics
-  synonyms
+  dialogue
 
   constructor() {
     this.characters = charactersJson
     this.topics = topicsJson
-    this.synonyms = synonymsJson
+    this.dialogue = dialogueJson
   }
 
 
@@ -95,15 +95,28 @@ export class ChatManagerService {
 
     // console.log('known', address, topicName, addressArray, value)
 
-    return value
+    return {
+      address: address,
+      value: value
+    }
   }
 
   private formatAnswer(character, known) {
     // console.log('formatting answer', known, Object.keys(known))
-    if (known instanceof Object) {
-      return 'Yes, I know about ' + known[Object.keys(known)[0]]
+
+    let dialogue = this.dialogue.find(prop => {
+      let i = known.address.indexOf(prop.property)
+      return i > -1 && known.address.substring(i) === prop.property
+    })
+    console.log('propd', dialogue)
+
+    let val = (known.value instanceof Object) ? known[Object.keys(known)[0]] : known.value
+
+    if (dialogue){
+      return dialogue.response.replace('$character', character.name).replace('$value', val)
     }
-    return 'Yeah, I know about ' + known
+
+    return 'Yeah, I know about ' + known.value
 
 
 
