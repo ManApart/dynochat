@@ -1,5 +1,5 @@
-<div *ngIf="selectedCharacter.name">
-  <h2>Chatting with {{selectedCharacter.name}}</h2>
+<div *ngIf="selectedCharacter">
+  <h2>Chatting with {{selectedCharacter}}</h2>
 
   <input #userMessage (keyup.enter)="onEnter(userMessage.value)">
 

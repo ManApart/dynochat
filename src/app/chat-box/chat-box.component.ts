@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from '../data.service';
 import { ISubscription } from 'rxjs/Subscription';
+import { ChatManagerService } from '../chat-manager.service';
 
 @Component({
   selector: 'app-chat-box',
@@ -13,9 +14,9 @@ export class ChatBoxComponent implements OnInit {
   userMessage
   response
 
-  constructor(private dataService: DataService) {
+  constructor(private dataService: DataService, private chatManager: ChatManagerService) {
     this.characterSubscription = this.dataService.selectedCharacter.subscribe(character => {
-      this.selectedCharacter = character
+      this.selectedCharacter = character.name
     })
   }
 
@@ -24,7 +25,7 @@ export class ChatBoxComponent implements OnInit {
 
   onEnter(value) {
     console.log(value)
-    this.response = value
+    this.response = this.chatManager.getResponse(this.selectedCharacter, value)
   }
 
 }
