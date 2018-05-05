@@ -1,0 +1,21 @@
+[
+    {
+        "name": "Eln Drato",
+        "race": "Nephatle",
+        "residence": {
+            "town": "Kanbara",
+            "building": "Map Maker Manor"
+        },
+        "knows": [
+            "Breymin.residence.town"
+        ]
+    },
+    {
+        "name": "Breymin",
+        "residence": {
+            "town": "Kanbara",
+            "building": "Map Maker Manor"
+        },
+        "knows": []
+    }
+]
