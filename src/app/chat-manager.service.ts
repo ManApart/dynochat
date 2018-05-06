@@ -20,12 +20,13 @@ export class ChatManagerService {
     console.log(characterName, 'responding to ', userMessage)
     let character = this.characters.find(char => { return char.name == characterName })
     let userWords = userMessage.toLocaleLowerCase().replace(/[^a-zA-Z ]/g, '').split(' ')
-    let intent = this.getIntent(userWords)
-    let response = this.formulateResponse(intent, character)
+    let address = this.createPropertyAddress(userWords)
+    //find trigger words
+    let response = this.formulateResponse(address, character)
     return response
   }
 
-  private getIntent(words) {
+  private createPropertyAddress(words) {
 
     let found = undefined
     words.forEach(word => {
@@ -66,24 +67,24 @@ export class ChatManagerService {
       return 'I\'m not even sure what you\'re asking about'
     }
 
-    let known = this.known(character, address)
+    let responseInfo = this.createResponseInfo(character, address)
 
-    if (!known) {
+    if (!responseInfo) {
       return 'I don\'t know anything about ' + address
     }
 
-    return address + ': ' + this.formatAnswer(character, known)
+    return address + ': ' + this.formatAnswer(character, responseInfo)
 
   }
 
-  private known(character, subject) {
-    // console.log('asking', character.name, 'about', subject)
-    let characterKnown = character.knows.find(address => {
+  private createResponseInfo(character, address) {
+    console.log('asking', character.name, 'about', address)
+    let characterKnown = character.knows.find(knownString => {
       //the character knows a part of this path
-      return address.indexOf(subject.address) || subject.address.indexOf(address)
+      return knownString.indexOf(address) || address.indexOf(knownString)
     })
-    let characterKnows = (characterKnown.length < subject.length)
-    let addressArray = subject.split('.')
+    let characterKnows = (characterKnown.length < address.length)
+    let addressArray = address.split('.')
     let topicName = addressArray.shift()
     let topic = this.characters.find(char => { return char.name == topicName })
     let value: any = topic
@@ -95,7 +96,7 @@ export class ChatManagerService {
     // console.log('known', address, topicName, addressArray, value)
 
     return {
-      address: subject,
+      address: address,
       characterKnows: characterKnows,
       value: value
     }
