@@ -4,7 +4,7 @@
         "synonyms": ["location", "city"],
         "response": {
             "unknown": "I don't know where $subject lives",
-            "where": "$subject lives in $value"
+            "default": "$subject lives in $value"
         }
     },
     {
@@ -12,7 +12,7 @@
         "synonyms": ["home"],
         "response": {
             "unknown": "I don't know where $subject lives",
-            "where": "$subject lives at $value"
+            "default": "$subject lives at $value"
         }
     }
 ]

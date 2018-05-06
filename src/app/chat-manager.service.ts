@@ -15,15 +15,19 @@ export class ChatManagerService {
     this.dialogue = dialogueJson
   }
 
-
   getResponse(characterName: String, userMessage: String): String {
-    console.log(characterName, 'responding to ', userMessage)
     let character = this.characters.find(char => { return char.name == characterName })
     let userWords = userMessage.toLocaleLowerCase().replace(/[^a-zA-Z ]/g, '').split(' ')
     let address = this.createPropertyAddress(userWords)
-    //find trigger words
-    let response = this.formulateResponse(address, character)
-    return response
+    // console.log('asking', character.name, 'about', address)
+    
+    let responseInfo = {
+      address: address,
+      characterKnows: this.doesCharacterKnow(address, character),
+      value: this.getValue(address)
+    }
+
+    return address + ': ' + this.formatAnswer(character, responseInfo)
   }
 
   private createPropertyAddress(words) {
@@ -61,29 +65,15 @@ export class ChatManagerService {
     })
   }
 
-  private formulateResponse(address, character) {
-    console.log('responding about', address)
-    if (!address) {
-      return 'I\'m not even sure what you\'re asking about'
-    }
-
-    let responseInfo = this.createResponseInfo(character, address)
-
-    if (!responseInfo) {
-      return 'I don\'t know anything about ' + address
-    }
-
-    return address + ': ' + this.formatAnswer(character, responseInfo)
-
-  }
-
-  private createResponseInfo(character, address) {
-    console.log('asking', character.name, 'about', address)
+  private doesCharacterKnow(address, character){
     let characterKnown = character.knows.find(knownString => {
       //the character knows a part of this path
       return knownString.indexOf(address) || address.indexOf(knownString)
     })
-    let characterKnows = (characterKnown.length < address.length)
+    return (characterKnown.length < address.length)
+  }
+
+  private getValue(address) {
     let addressArray = address.split('.')
     let topicName = addressArray.shift()
     let topic = this.characters.find(char => { return char.name == topicName })
@@ -92,24 +82,15 @@ export class ChatManagerService {
     while (addressArray.length > 0) {
       value = value[addressArray.shift()]
     }
-
-    // console.log('known', address, topicName, addressArray, value)
-
-    return {
-      address: address,
-      characterKnows: characterKnows,
-      value: value
-    }
+    return value
   }
 
   private formatAnswer(character, responseInfo) {
-    console.log('formatting answer', responseInfo)
-
     let dialogue = this.dialogue.find(prop => {
       let i = responseInfo.address.indexOf(prop.property)
       return i > -1 && responseInfo.address.substring(i) === prop.property
     })
-    console.log('info', dialogue)
+    console.log('formatting answer', responseInfo, dialogue)
 
     let val = (responseInfo.value instanceof Object) ? responseInfo[Object.keys(responseInfo)[0]] : responseInfo.value
 
@@ -121,15 +102,8 @@ export class ChatManagerService {
     return (responseInfo.characterKnows ? 'Yeah, I know about ' : 'I don\'t know about ') + val
   }
 
-  getAppropriateResponse(known, dialogue) {
-    let response = undefined
-    if (!known.characterKnows) {
-      response = dialogue.response.unknown
-    } else {
-      response = dialogue.response.where
-    }
-
-    return response || 'I\'m not sure'
+  getAppropriateResponse(responseInfo, dialogue) {
+    return  responseInfo.characterKnows ? dialogue.response.default : dialogue.response.unknown
   }
 
   fillResponseVariables(response, character, val, address) {
