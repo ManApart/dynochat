@@ -18,3 +18,21 @@ Ask where Breymin Lives
 Eln says Kanbera
 Ask what building Breymin lives in
 Eln says he doesn't know what building Breymin lives in
+
+
+
+Character templates: multiple inheritance that fill out character attributes
+example: Eln > Citizen of Kanbera
+
+
+dialogue trigger words (where, when, what, who, why, should, could, can, may) with unique responses
+
+questions vs statements
+
+some sort of synonym replace
+
+replace possessive: breymin's etc
+
+string property replace:  "I've been in [$character.residence.town] for a while now and I've not seen $subject
+
+find address for pieces even if full address isn't there ie: 'eln building' should find eln.residence.building

@@ -2,11 +2,17 @@
     {
         "property": "residence.town",
         "synonyms": ["location", "city"],
-        "response": "$character lives in $value"
+        "response": {
+            "unknown": "I don't know where $subject lives",
+            "where": "$subject lives in $value"
+        }
     },
     {
         "property": "residence.building",
         "synonyms": ["home"],
-        "response": "$character lives at $value"
+        "response": {
+            "unknown": "I don't know where $subject lives",
+            "where": "$subject lives at $value"
+        }
     }
 ]

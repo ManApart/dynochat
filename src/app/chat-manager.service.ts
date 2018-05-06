@@ -28,9 +28,8 @@ export class ChatManagerService {
   private getIntent(words) {
 
     let found = undefined
-    console.log('cars', this.characters)
     words.forEach(word => {
-      if (!found){
+      if (!found) {
         found = this.characters.find(char => { return char.name.toLowerCase().indexOf(word) > -1 })
       }
     })
@@ -51,9 +50,9 @@ export class ChatManagerService {
     return address.join('.')
   }
 
-  private findProperty(property, words, address){
+  private findProperty(property, words, address) {
     words.forEach(word => {
-      if (Object.keys(property).indexOf(word) > -1){
+      if (Object.keys(property).indexOf(word) > -1) {
         address.push(word)
         let child = property[word]
         this.findProperty(child, words, address)
@@ -73,7 +72,7 @@ export class ChatManagerService {
       return 'I don\'t know anything about ' + address
     }
 
-    return 'You asked about ' + address + '. ' + this.formatAnswer(character, known)
+    return address + ': ' + this.formatAnswer(character, known)
 
   }
 
@@ -83,43 +82,60 @@ export class ChatManagerService {
       //the character knows a part of this path
       return address.indexOf(subject.address) || subject.address.indexOf(address)
     })
-    let address = characterKnown.length < subject.length ? characterKnown : subject
-    let addressArray = address.split('.')
+    let characterKnows = (characterKnown.length < subject.length)
+    let addressArray = subject.split('.')
     let topicName = addressArray.shift()
     let topic = this.characters.find(char => { return char.name == topicName })
     let value: any = topic
 
-    while (addressArray.length > 0 ){
+    while (addressArray.length > 0) {
       value = value[addressArray.shift()]
     }
 
     // console.log('known', address, topicName, addressArray, value)
 
     return {
-      address: address,
+      address: subject,
+      characterKnows: characterKnows,
       value: value
     }
   }
 
-  private formatAnswer(character, known) {
-    // console.log('formatting answer', known, Object.keys(known))
+  private formatAnswer(character, responseInfo) {
+    console.log('formatting answer', responseInfo)
 
     let dialogue = this.dialogue.find(prop => {
-      let i = known.address.indexOf(prop.property)
-      return i > -1 && known.address.substring(i) === prop.property
+      let i = responseInfo.address.indexOf(prop.property)
+      return i > -1 && responseInfo.address.substring(i) === prop.property
     })
-    console.log('propd', dialogue)
+    console.log('info', dialogue)
 
-    let val = (known.value instanceof Object) ? known[Object.keys(known)[0]] : known.value
+    let val = (responseInfo.value instanceof Object) ? responseInfo[Object.keys(responseInfo)[0]] : responseInfo.value
 
-    if (dialogue){
-      return dialogue.response.replace('$character', character.name).replace('$value', val)
+    if (dialogue) {
+      let response = this.getAppropriateResponse(responseInfo, dialogue)
+      return this.fillResponseVariables(response, character, val, responseInfo.address)
     }
 
-    return 'Yeah, I know about ' + known.value
+    return (responseInfo.characterKnows ? 'Yeah, I know about ' : 'I don\'t know about ') + val
+  }
 
+  getAppropriateResponse(known, dialogue) {
+    let response = undefined
+    if (!known.characterKnows) {
+      response = dialogue.response.unknown
+    } else {
+      response = dialogue.response.where
+    }
 
+    return response || 'I\'m not sure'
+  }
 
+  fillResponseVariables(response, character, val, address) {
+    return response
+      .replace('$character', character.name)
+      .replace('$value', val)
+      .replace('$subject', address.split('.').shift())
   }
 
 }
