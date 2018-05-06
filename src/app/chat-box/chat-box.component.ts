@@ -21,7 +21,8 @@ export class ChatBoxComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.onEnter('breymin town residence')
+    this.onEnter('breymin town')
+    // this.onEnter('breymin town residence')
     // this.onEnter('eln building residence')
     // this.onEnter('Do you know Breymin town residence?')
   }

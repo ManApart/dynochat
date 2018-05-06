@@ -31,7 +31,6 @@ export class ChatManagerService {
   }
 
   private createPropertyAddress(words) {
-
     let found = undefined
     words.forEach(word => {
       if (!found) {
@@ -47,24 +46,46 @@ export class ChatManagerService {
 
   private findAddress(topic, words) {
     console.log('finding address for', topic, words)
-    let address = []
-    address.push(topic.name)
+    
+    //get all property strings
+    let allKeys = this.getDeepKeys(topic)
 
-    this.findProperty(topic, words, address)
-
-    return address.join('.')
-  }
-
-  private findProperty(property, words, address) {
-    words.forEach(word => {
-      if (Object.keys(property).indexOf(word) > -1) {
-        address.push(word)
-        let child = property[word]
-        this.findProperty(child, words, address)
+    //find the one with the most word matches
+    let sorted = allKeys.map(key =>{
+      let score = 0
+      words.forEach(word => {
+        score += (key.indexOf(word) > -1) ? 1 : 0
+      });
+      return {
+        key: key,
+        score: score
       }
     })
+    .sort((a, b) => {
+      return b.score - a.score
+    })
+
+    let highestScore = sorted[0]
+    console.log('keys', sorted, highestScore)
+    //stop at the lowest level of detail?
+
+    return topic.name + "." + highestScore.key 
   }
 
+  private getDeepKeys(obj) {
+    let keys = []
+    for(let key in obj) {
+        keys.push(key);
+        if(typeof obj[key] === "object") {
+            let subkeys = this.getDeepKeys(obj[key])
+            keys = keys.concat(subkeys.map(function(subkey) {
+                return key + "." + subkey
+            }))
+        }
+    }
+    return keys
+}
+  
   private doesCharacterKnow(address, character){
     let characterKnown = character.knows.find(knownString => {
       //the character knows a part of this path
@@ -93,6 +114,7 @@ export class ChatManagerService {
     console.log('formatting answer', responseInfo, dialogue)
 
     let val = (responseInfo.value instanceof Object) ? responseInfo[Object.keys(responseInfo)[0]] : responseInfo.value
+    val = val || 'that'
 
     if (dialogue) {
       let response = this.getAppropriateResponse(responseInfo, dialogue)
