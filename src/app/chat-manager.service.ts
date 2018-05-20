@@ -4,7 +4,6 @@ import * as dialogueJson from 'assets/data/dialogue.json';
 
 @Injectable()
 export class ChatManagerService {
-  characters
   topics
   dialogue
 
@@ -14,7 +13,7 @@ export class ChatManagerService {
   }
 
   getResponse(characterName: String, userMessage: String): String {
-    let character = this.characters.find(char => { return char.type.indexOf('character') != -1 && char.name == characterName })
+    let character = this.topics.find(char => { return char.type && char.type.indexOf('character') != -1 && char.name == characterName })
     let userWords = userMessage.toLocaleLowerCase().replace(/[^a-zA-Z ]/g, '').split(' ')
     let address = this.createPropertyAddress(userWords)
     // console.log('asking', character.name, 'about', address)
@@ -32,7 +31,7 @@ export class ChatManagerService {
     let found = undefined
     words.forEach(word => {
       if (!found) {
-        found = this.characters.find(char => { return char.name.toLowerCase().indexOf(word) > -1 })
+        found = this.topics.find(char => { return char.name.toLowerCase().indexOf(word) > -1 })
       }
     })
 
@@ -95,7 +94,7 @@ export class ChatManagerService {
   private getValue(address) {
     let addressArray = address.split('.')
     let topicName = addressArray.shift()
-    let topic = this.characters.find(char => { return char.name == topicName })
+    let topic = this.topics.find(char => { return char.name == topicName })
     let value: any = topic
 
     while (addressArray.length > 0) {

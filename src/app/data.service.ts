@@ -12,7 +12,7 @@ export class DataService implements OnInit{
   public readonly selectedCharacter
 
   constructor() { 
-    let characters = (charactersJson as any).filter(char => {return char.type.indexOf('character') != -1})
+    let characters = (charactersJson as any).filter(char => {return char.type && char.type.indexOf('character') != -1})
     this.chars = new BehaviorSubject<any>(characters)
     this.characters = this.chars.asObservable()
     this.selectedChar = new BehaviorSubject<any>(this.chars.getValue()[0])
