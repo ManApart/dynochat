@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import * as charactersJson from 'assets/data/characters.json';
 import * as topicsJson from 'assets/data/topics.json';
 import * as dialogueJson from 'assets/data/dialogue.json';
 
@@ -10,13 +9,12 @@ export class ChatManagerService {
   dialogue
 
   constructor() {
-    this.characters = charactersJson
     this.topics = topicsJson
     this.dialogue = dialogueJson
   }
 
   getResponse(characterName: String, userMessage: String): String {
-    let character = this.characters.find(char => { return char.name == characterName })
+    let character = this.characters.find(char => { return char.type.indexOf('character') != -1 && char.name == characterName })
     let userWords = userMessage.toLocaleLowerCase().replace(/[^a-zA-Z ]/g, '').split(' ')
     let address = this.createPropertyAddress(userWords)
     // console.log('asking', character.name, 'about', address)

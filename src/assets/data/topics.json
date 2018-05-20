@@ -1,6 +1,32 @@
 [
     {
+        "name": "Eln Drato",
+        "type": ["character"],
+        "race": "Nephatle",
+        "residence": {
+            "town": "Kanbara",
+            "building": "Map Maker Manor"
+        },
+        "knows": [
+            "Breymin.residence.building"
+        ]
+    },
+    {
+        "name": "Breymin",
+        "type": ["character"],
+        "residence": {
+            "town": "Kanbara",
+            "building": "Map Maker Manor"
+        },
+        "knows": [
+            "Breymin.residence.town"
+        ]
+    },
+    {
         "name": "Kanbara",
-        "type": ["location", "town"]
+        "type": [
+            "location",
+            "town"
+        ]
     }
 ]
