@@ -16,6 +16,7 @@ export class ChatBoxComponent implements OnInit {
 
   constructor(private dataService: DataService, private chatManager: ChatManagerService) {
     this.characterSubscription = this.dataService.selectedCharacter.subscribe(character => {
+      console.log('chatbox', character)
       this.selectedCharacter = character.name
     })
   }

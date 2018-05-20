@@ -73,7 +73,7 @@ export class ChatManagerService {
     let keys = []
     for(let key in obj) {
         keys.push(key);
-        if(typeof obj[key] === "object") {
+        if(typeof obj[key] === "object" && !Array.isArray(obj[key])) {
             let subkeys = this.getDeepKeys(obj[key])
             keys = keys.concat(subkeys.map(function(subkey) {
                 return key + "." + subkey
