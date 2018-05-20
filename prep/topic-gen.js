@@ -1,5 +1,6 @@
 const base = require('./topics-base.json')
 const fs = require('fs')
+const ignoredProperties = ['abstract', 'parameters']
 
 let topics = base
 
@@ -18,30 +19,31 @@ function addInheritedProperties(topics) {
 
 function addBaseValues(topic, topics) {
     if (topic.inherits) {
-        topic.inherits.forEach(inheritId => {
-            let parent = topics.find(topic => { return topic.name === inheritId })
+        topic.inherits.forEach(params => {
+            let parent = topics.find(topic => { return topic.name === params.name })
             addBaseValues(parent, topics)
-            appendProperties(topic, parent)
+            appendProperties(topic, parent, params)
         })
         topic.inherits = undefined
     }
 }
 
-function appendProperties(topic, parent) {
+function appendProperties(topic, parent, params) {
     console.log('adding values from', parent.name, 'to', topic.name)
     let parentKeys = getDeepKeys(parent)
     parentKeys.forEach(key => {
-        if (key !== 'abstract') {
+        if (ignoredProperties.indexOf(key) == -1) {
             if (!topic[key]) {
-                console.log('setting', key, 'to', getValue(key, parent))
-                setValue(key, topic, getValue(key, parent))
+                let value = replaceParams(getValue(key, parent), params)
+                console.log('setting', key, 'to', value)
+                setValue(key, topic, value)
             } else if (Array.isArray(topic[key])) {
-                console.log('appending', parent[key], 'to', key)
-                topic[key] = topic[key].concat(parent[key])
+                let modified = replaceParamsList(parent[key], params)
+                console.log('appending', modified, 'to', key)
+                topic[key] = topic[key].concat(modified)
             }
         }
     })
-
 }
 
 function getDeepKeys(obj) {
@@ -66,6 +68,21 @@ function getValue(address, object) {
         value = value[addressArray.shift()]
     }
     return value
+}
+
+function replaceParamsList(valueList, params) {
+    return valueList.map(value => { return replaceParams(value, params) })
+}
+
+function replaceParams(value, params) {
+    let modified = value
+    if (value.indexOf('$') > -1) {
+        for (let key in params) {
+            modified = modified.replace('$' + key, params[key])
+        }
+        console.log('modified', value, 'to', modified)
+    }
+    return modified
 }
 
 function setValue(address, object, value) {

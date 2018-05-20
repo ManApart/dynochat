@@ -1,18 +1,21 @@
 [
     {
-        "name": "Kanbara Resident",
+        "name": "Town Resident",
+        "parameters": ["townName"],
         "abstract": true,
         "type": ["character"],
         "residence": {
-            "town": "Kanbara"
+            "town": "$townName"
         },
         "knows": [
-            "Kanbara"
+            "$townName"
         ]
     },
     {
         "name": "Eln Drato",
-        "inherits": ["Kanbara Resident"],
+        "inherits": [
+            {"name":"Town Resident", "townName": "Kanbara"}
+        ],
         "race": "Nephatle",
         "residence": {
             "building": "Map Maker Manor"
@@ -23,7 +26,7 @@
     },
     {
         "name": "Breymin",
-        "inherits": ["Kanbara Resident"],
+        "inherits": [{"name":"Town Resident", "townName": "Kanbara"}],
         "residence": {
             "building": "Map Maker Manor"
         },
