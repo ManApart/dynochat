@@ -29,18 +29,18 @@ function addBaseValues(topic, topics) {
 }
 
 function appendProperties(topic, parent, params) {
-    console.log('adding values from', parent.name, 'to', topic.name)
+    console.log('\nadding values from', parent.name, 'to', topic.name)
     let parentKeys = getDeepKeys(parent)
     parentKeys.forEach(key => {
         if (ignoredProperties.indexOf(key) == -1) {
+            let parentValue = replaceParams(JSON.parse(JSON.stringify(getValue(key, parent))), params)
             if (!topic[key]) {
-                let value = replaceParams(getValue(key, parent), params)
-                console.log('setting', key, 'to', value)
-                setValue(key, topic, value)
+                console.log('setting', key, 'from', topic[key], 'to', parentValue)
+                setValue(key, topic, parentValue)
             } else if (Array.isArray(topic[key])) {
-                let modified = replaceParamsList(parent[key], params)
-                console.log('appending', modified, 'to', key)
-                topic[key] = topic[key].concat(modified)
+                console.log('appending', parentValue, 'to', key)
+                topic[key] = topic[key].concat(parentValue)
+                //TODO - remove duplicates
             }
         }
     })
@@ -70,17 +70,37 @@ function getValue(address, object) {
     return value
 }
 
+function replaceParams(obj, params) {
+    if (Array.isArray(obj)) {
+        obj = replaceParamsList(obj, params)
+    } else if (typeof obj === "object") {
+        obj = replaceParamsObject(obj, params)
+    } else {
+        obj = replaceParamsField(obj, params)
+    }
+    return obj
+}
+
+function replaceParamsObject(obj, params) {
+    let keys = getDeepKeys(obj)
+    keys.forEach(key => {
+        obj[key] = replaceParams(obj[key], params)
+    })
+    return obj
+}
+
 function replaceParamsList(valueList, params) {
     return valueList.map(value => { return replaceParams(value, params) })
 }
 
-function replaceParams(value, params) {
+function replaceParamsField(value, params) {
     let modified = value
+    // console.log('replacing params for', value, params)
     if (value.indexOf('$') > -1) {
         for (let key in params) {
             modified = modified.replace('$' + key, params[key])
         }
-        console.log('modified', value, 'to', modified)
+        // console.log('modified', value, 'to', modified)
     }
     return modified
 }

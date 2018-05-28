@@ -2,30 +2,68 @@
     {
         "name": "Eln Drato",
         "race": "Nephatle",
-        "residence": {
-            "building": "Map Maker Manor",
-            "town": "Kanbara"
-        },
         "knows": [
-            "Breymin.residence.building",
-            "Kanbara"
+            {
+                "what": "age",
+                "whereField": "name",
+                "whereValue": "Breymin"
+            },
+            {
+                "what": "Kanbara"
+            },
+            {
+                "what": "residence.town",
+                "whereType": "Kanbara Resident"
+            },
+            {
+                "what": "Map Maker Manor"
+            },
+            {
+                "what": "residence.building",
+                "whereField": "type",
+                "whereValue": "Map Maker Manor Resident"
+            }
         ],
         "type": [
-            "character"
-        ]
+            "character",
+            "Kanbara Resident",
+            "character",
+            "Map Maker Manor Resident"
+        ],
+        "residence": {
+            "town": "Kanbara",
+            "building": "Map Maker Manor"
+        }
     },
     {
         "name": "Breymin",
+        "age": "20",
+        "type": [
+            "character",
+            "Kanbara Resident",
+            "character",
+            "Map Maker Manor Resident"
+        ],
         "residence": {
-            "building": "Map Maker Manor",
-            "town": "Kanbara"
+            "town": "Kanbara",
+            "building": "Map Maker Manor"
         },
         "knows": [
-            "Breymin.residence.town",
-            "Kanbara"
-        ],
-        "type": [
-            "character"
+            {
+                "what": "Kanbara"
+            },
+            {
+                "what": "residence.town",
+                "whereType": "Kanbara Resident"
+            },
+            {
+                "what": "Map Maker Manor"
+            },
+            {
+                "what": "residence.building",
+                "whereField": "type",
+                "whereValue": "Map Maker Manor Resident"
+            }
         ]
     },
     {

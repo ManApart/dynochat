@@ -1,38 +1,86 @@
 [
     {
         "name": "Town Resident",
-        "parameters": ["townName"],
+        "parameters": [
+            "townName"
+        ],
         "abstract": true,
-        "type": ["character"],
+        "type": [
+            "character",
+            "$townName Resident"
+        ],
         "residence": {
             "town": "$townName"
         },
         "knows": [
-            "$townName"
+            {
+                "what": "$townName"
+            },
+            {
+                "what": "residence.town",
+                "whereField": "type",
+                "whereValue": "$townName Resident"
+            }
+        ]
+    },
+    {
+        "name": "Building Resident",
+        "parameters": [
+            "buildingName"
+        ],
+        "abstract": true,
+        "type": [
+            "character",
+            "$buildingName Resident"
+        ],
+        "residence": {
+            "building": "$buildingName"
+        },
+        "knows": [
+            {
+                "what": "$buildingName"
+            },
+            {
+                "what": "residence.building",
+                "whereField": "type",
+                "whereValue": "$buildingName Resident"
+            }
         ]
     },
     {
         "name": "Eln Drato",
         "inherits": [
-            {"name":"Town Resident", "townName": "Kanbara"}
+            {
+                "name": "Town Resident",
+                "townName": "Kanbara"
+            },
+            {
+                "name": "Building Resident",
+                "buildingName": "Map Maker Manor"
+            }
         ],
         "race": "Nephatle",
-        "residence": {
-            "building": "Map Maker Manor"
-        },
         "knows": [
-            "Breymin.residence.building"
+            {
+                "what": "age",
+                "whereField": "name",
+                "whereValue": "Breymin"
+            }
         ]
     },
     {
         "name": "Breymin",
-        "inherits": [{"name":"Town Resident", "townName": "Kanbara"}],
-        "residence": {
-            "building": "Map Maker Manor"
-        },
-        "knows": [
-            "Breymin.residence.town"
-        ]
+        "inherits": [
+            {
+                "name": "Town Resident",
+                "townName": "Kanbara"
+            },
+            {
+                "name": "Building Resident",
+                "buildingName": "Map Maker Manor"
+            }
+        ],
+        "age": "20"
     },
     {
         "name": "Kanbara",

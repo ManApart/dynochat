@@ -21,7 +21,7 @@ Eln says he doesn't know what building Breymin lives in
 
 
 
-Character templates: multiple inheritance that fill out character attributes
+X Character templates: multiple inheritance that fill out character attributes
 example: Eln > Citizen of Kanbera
 
 
@@ -33,6 +33,8 @@ some sort of synonym replace
 
 replace possessive: breymin's etc
 
-string property replace:  "I've been in [$character.residence.town] for a while now and I've not seen $subject
+X string property replace:  "I've been in [$character.residence.town] for a while now and I've not seen $subject
+
+knows should be composed of a what (address to property) and a where (conditional statement, like the topic's name, or that the topic is a resident of a certain town etc)
 
 find address for pieces even if full address isn't there ie: 'eln building' should find eln.residence.building
