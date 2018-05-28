@@ -12,25 +12,27 @@ export class ChatBoxComponent implements OnInit {
   characterSubscription: ISubscription
   selectedCharacter
   userMessage
+  lastMessage
   response
 
   constructor(private dataService: DataService, private chatManager: ChatManagerService) {
     this.characterSubscription = this.dataService.selectedCharacter.subscribe(character => {
-      console.log('chatbox', character)
       this.selectedCharacter = character.name
     })
   }
 
   ngOnInit() {
-    this.onEnter('breymin town')
+    this.userMessage ='what town does Breymin live in?'
     // this.onEnter('breymin town residence')
     // this.onEnter('eln building residence')
     // this.onEnter('Do you know Breymin town residence?')
+    this.onEnter()
   }
 
-  onEnter(value) {
-    console.log(value)
-    this.response = this.chatManager.getResponse(this.selectedCharacter, value)
+  onEnter() {
+    this.lastMessage = this.userMessage
+    this.response = this.chatManager.getResponse(this.selectedCharacter, this.userMessage)
+    this.userMessage = ''
   }
 
 }

@@ -35,6 +35,6 @@ replace possessive: breymin's etc
 
 X string property replace:  "I've been in [$character.residence.town] for a while now and I've not seen $subject
 
-knows should be composed of a what (address to property) and a where (conditional statement, like the topic's name, or that the topic is a resident of a certain town etc)
+X knows should be composed of a what (address to property) and a where (conditional statement, like the topic's name, or that the topic is a resident of a certain town etc)
 
 find address for pieces even if full address isn't there ie: 'eln building' should find eln.residence.building

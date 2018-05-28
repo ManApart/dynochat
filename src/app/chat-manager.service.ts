@@ -25,7 +25,7 @@ export class ChatManagerService {
       value: this.getValue(targetTopic)
     }
 
-    return targetTopic.property + ': ' + this.formatAnswer(character, responseInfo)
+    return this.formatAnswer(character, responseInfo)
   }
 
   private createPropertyAddress(words) {
@@ -39,11 +39,14 @@ export class ChatManagerService {
     if (found) {
       return this.findAddress(found, words)
     }
-    return {}
+    return {
+      topic: undefined,
+      property: undefined
+    }
   }
 
   private findAddress(topic, words) {
-    console.log('finding address for', topic, words)
+    console.log('finding address for', topic.name, 'with words:', words.join(' '))
 
     //get all property strings
     let allKeys = this.getDeepKeys(topic)
@@ -64,10 +67,9 @@ export class ChatManagerService {
       })
 
     let highestScore = sorted[0]
-    console.log('keys', sorted, highestScore)
+    // console.log('keys', sorted, highestScore)
     //stop at the lowest level of detail?
 
-    // return topic.name + "." + highestScore.key 
     return {
       topic: topic,
       property: highestScore.key
@@ -103,7 +105,6 @@ export class ChatManagerService {
         }
         return false
       })
-      console.log(character.name, 'knows', targetTopic.property, 'about', targetTopic.topic.name, ':', characterKnown)
       return (typeof characterKnown !== "undefined")
     }
   }
@@ -128,7 +129,7 @@ export class ChatManagerService {
       let i = responseInfo.address.indexOf(prop.property)
       return i > -1 && responseInfo.address.substring(i) === prop.property
     }) : undefined
-    console.log('formatting answer', responseInfo, dialogue)
+    console.log('formatting answer', dialogue.response.default, 'with value', responseInfo.address)
 
     let val = (responseInfo.value instanceof Object) ? responseInfo[Object.keys(responseInfo)[0]] : responseInfo.value
     val = val || 'that'

@@ -1,12 +1,17 @@
 <div *ngIf="selectedCharacter">
   <h2>Chatting with {{selectedCharacter}}</h2>
 
-  <input #userMessage (keyup.enter)="onEnter(userMessage.value)" value="" style="width:100%; height:100px">
+  <input (keyup.enter)="onEnter()" [(ngModel)]="userMessage" style="width:100%; height:100px">
 
   <br/>
   <br/>
-  Response: 
-  <br/>
-  {{response}}
 
+  <div class="yourMessage">
+    <p>You:</p>
+    <p>{{lastMessage}}</p>
+  </div>
+  <div class="responseMessage">
+    <p>{{selectedCharacter}}</p>
+    <p>{{response}}</p>
+  </div>
 </div>
