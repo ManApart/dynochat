@@ -15,16 +15,17 @@ export class ChatManagerService {
   getResponse(characterName: String, userMessage: String): String {
     let character = this.topics.find(char => { return char.type && char.type.indexOf('character') != -1 && char.name == characterName })
     let userWords = userMessage.toLocaleLowerCase().replace(/[^a-zA-Z ]/g, '').split(' ')
-    let address = this.createPropertyAddress(userWords)
+    let targetTopic = this.createPropertyAddress(userWords)
     // console.log('asking', character.name, 'about', address)
-    
+
     let responseInfo = {
-      address: address,
-      characterKnows: this.doesCharacterKnow(address, character),
-      value: this.getValue(address)
+      topic: targetTopic.topic,
+      address: targetTopic.property,
+      characterKnows: this.doesCharacterKnow(targetTopic, character),
+      value: this.getValue(targetTopic)
     }
 
-    return address + ': ' + this.formatAnswer(character, responseInfo)
+    return targetTopic.property + ': ' + this.formatAnswer(character, responseInfo)
   }
 
   private createPropertyAddress(words) {
@@ -43,12 +44,12 @@ export class ChatManagerService {
 
   private findAddress(topic, words) {
     console.log('finding address for', topic, words)
-    
+
     //get all property strings
     let allKeys = this.getDeepKeys(topic)
 
     //find the one with the most word matches
-    let sorted = allKeys.map(key =>{
+    let sorted = allKeys.map(key => {
       let score = 0
       words.forEach(word => {
         score += (key.indexOf(word) > -1) ? 1 : 0
@@ -58,44 +59,58 @@ export class ChatManagerService {
         score: score
       }
     })
-    .sort((a, b) => {
-      return b.score - a.score
-    })
+      .sort((a, b) => {
+        return b.score - a.score
+      })
 
     let highestScore = sorted[0]
     console.log('keys', sorted, highestScore)
     //stop at the lowest level of detail?
 
-    return topic.name + "." + highestScore.key 
+    // return topic.name + "." + highestScore.key 
+    return {
+      topic: topic,
+      property: highestScore.key
+    }
   }
 
   private getDeepKeys(obj) {
     let keys = []
-    for(let key in obj) {
-        keys.push(key);
-        if(typeof obj[key] === "object" && !Array.isArray(obj[key])) {
-            let subkeys = this.getDeepKeys(obj[key])
-            keys = keys.concat(subkeys.map(function(subkey) {
-                return key + "." + subkey
-            }))
-        }
+    for (let key in obj) {
+      keys.push(key);
+      if (typeof obj[key] === "object" && !Array.isArray(obj[key])) {
+        let subkeys = this.getDeepKeys(obj[key])
+        keys = keys.concat(subkeys.map(function (subkey) {
+          return key + "." + subkey
+        }))
+      }
     }
     return keys
-}
-  
-  private doesCharacterKnow(address, character){
-    let characterKnown = character.knows.find(knownString => {
-      //the character knows a part of this path
-      return knownString.indexOf(address) || address.indexOf(knownString)
-    })
-    return (characterKnown.length < address.length)
   }
 
-  private getValue(address) {
-    let addressArray = address.split('.')
-    let topicName = addressArray.shift()
-    let topic = this.topics.find(char => { return char.name == topicName })
-    let value: any = topic
+  private doesCharacterKnow(targetTopic, character) {
+    let characterKnown = character.knows.find(knownObject => {
+      let knownString = knownObject.what
+      if (knownString.indexOf(targetTopic.property) != -1 || targetTopic.property.indexOf(knownString) != -1) {
+        if (knownObject.whereKey) {
+          let actualValue = targetTopic.topic[knownObject.whereKey]
+          // console.log('known target vs actual', knownString, knownObject.whereValue, actualValue)
+          return actualValue === knownObject.whereValue || (Array.isArray(actualValue) && actualValue.indexOf(knownObject.whereValue) > -1)
+        } else {
+          return true
+        }
+      }
+      return false
+    })
+    console.log(character.name, 'knows', targetTopic.property, 'about', targetTopic.topic.name, ':', characterKnown)
+    return (typeof characterKnown !== "undefined")
+  }
+
+  private getValue(targetTopic) {
+    // console.log('get value of', targetTopic)
+    let addressArray = targetTopic.property.split('.')
+    let topicName = targetTopic.topic.name
+    let value: any = targetTopic.topic
 
     while (addressArray.length > 0) {
       value = value[addressArray.shift()]
@@ -115,21 +130,21 @@ export class ChatManagerService {
 
     if (dialogue) {
       let response = this.getAppropriateResponse(responseInfo, dialogue)
-      return this.fillResponseVariables(response, character, val, responseInfo.address)
+      return this.fillResponseVariables(response, character, val, responseInfo.topic, responseInfo.address)
     }
 
     return (responseInfo.characterKnows ? 'Yeah, I know about ' : 'I don\'t know about ') + val
   }
 
   getAppropriateResponse(responseInfo, dialogue) {
-    return  responseInfo.characterKnows ? dialogue.response.default : dialogue.response.unknown
+    return responseInfo.characterKnows ? dialogue.response.default : dialogue.response.unknown
   }
 
-  fillResponseVariables(response, character, val, address) {
+  fillResponseVariables(response, character, val, topic, address) {
     return response
       .replace('$character', character.name)
       .replace('$value', val)
-      .replace('$subject', address.split('.').shift())
+      .replace('$subject', topic.name)
   }
 
 }

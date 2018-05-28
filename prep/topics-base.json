@@ -18,7 +18,7 @@
             },
             {
                 "what": "residence.town",
-                "whereField": "type",
+                "whereKey": "type",
                 "whereValue": "$townName Resident"
             }
         ]
@@ -42,7 +42,7 @@
             },
             {
                 "what": "residence.building",
-                "whereField": "type",
+                "whereKey": "type",
                 "whereValue": "$buildingName Resident"
             }
         ]
@@ -63,7 +63,7 @@
         "knows": [
             {
                 "what": "age",
-                "whereField": "name",
+                "whereKey": "name",
                 "whereValue": "Breymin"
             }
         ]
