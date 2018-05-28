@@ -39,7 +39,7 @@ export class ChatManagerService {
     if (found) {
       return this.findAddress(found, words)
     }
-    return undefined
+    return {}
   }
 
   private findAddress(topic, words) {
@@ -89,40 +89,45 @@ export class ChatManagerService {
   }
 
   private doesCharacterKnow(targetTopic, character) {
-    let characterKnown = character.knows.find(knownObject => {
-      let knownString = knownObject.what
-      if (knownString.indexOf(targetTopic.property) != -1 || targetTopic.property.indexOf(knownString) != -1) {
-        if (knownObject.whereKey) {
-          let actualValue = targetTopic.topic[knownObject.whereKey]
-          // console.log('known target vs actual', knownString, knownObject.whereValue, actualValue)
-          return actualValue === knownObject.whereValue || (Array.isArray(actualValue) && actualValue.indexOf(knownObject.whereValue) > -1)
-        } else {
-          return true
+    if (targetTopic && targetTopic.property) {
+      let characterKnown = character.knows.find(knownObject => {
+        let knownString = knownObject.what
+        if (knownString.indexOf(targetTopic.property) != -1 || targetTopic.property.indexOf(knownString) != -1) {
+          if (knownObject.whereKey) {
+            let actualValue = targetTopic.topic[knownObject.whereKey]
+            // console.log('known target vs actual', knownString, knownObject.whereValue, actualValue)
+            return actualValue === knownObject.whereValue || (Array.isArray(actualValue) && actualValue.indexOf(knownObject.whereValue) > -1)
+          } else {
+            return true
+          }
         }
-      }
-      return false
-    })
-    console.log(character.name, 'knows', targetTopic.property, 'about', targetTopic.topic.name, ':', characterKnown)
-    return (typeof characterKnown !== "undefined")
+        return false
+      })
+      console.log(character.name, 'knows', targetTopic.property, 'about', targetTopic.topic.name, ':', characterKnown)
+      return (typeof characterKnown !== "undefined")
+    }
   }
 
   private getValue(targetTopic) {
-    // console.log('get value of', targetTopic)
-    let addressArray = targetTopic.property.split('.')
-    let topicName = targetTopic.topic.name
-    let value: any = targetTopic.topic
+    if (targetTopic && targetTopic.property && targetTopic.topic) {
+      // console.log('get value of', targetTopic)
+      let addressArray = targetTopic.property.split('.')
+      let topicName = targetTopic.topic.name
+      let value: any = targetTopic.topic
 
-    while (addressArray.length > 0) {
-      value = value[addressArray.shift()]
+      while (addressArray.length > 0) {
+        value = value[addressArray.shift()]
+      }
+      return value
     }
-    return value
+    return undefined
   }
 
   private formatAnswer(character, responseInfo) {
-    let dialogue = this.dialogue.find(prop => {
+    let dialogue = responseInfo.address ? this.dialogue.find(prop => {
       let i = responseInfo.address.indexOf(prop.property)
       return i > -1 && responseInfo.address.substring(i) === prop.property
-    })
+    }) : undefined
     console.log('formatting answer', responseInfo, dialogue)
 
     let val = (responseInfo.value instanceof Object) ? responseInfo[Object.keys(responseInfo)[0]] : responseInfo.value
